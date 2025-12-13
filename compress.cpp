@@ -5,7 +5,6 @@
 #include <string>
 #include <fstream>
 #include <chrono>
-#include <filesystem>
 
 // HuffmanNode class
 class HuffmanNode {
@@ -369,9 +368,12 @@ int main(int argc, char* argv[]) {
         std::cerr << "Error: Input file '" << inputFile << "' not found.\n";
         return 1;
     }
+    
+    // Get original file size
+    checkFile.seekg(0, std::ios::end);
+    std::uintmax_t originalSize = checkFile.tellg();
     checkFile.close();
 
-    std::uintmax_t originalSize = std::filesystem::file_size(inputFile);
     std::cout << "Input file: " << inputFile << "\n";
     std::cout << "Output file: " << outputFile << "\n";
     std::cout << "Original file size: " << originalSize << " bytes\n\n";
@@ -384,7 +386,11 @@ int main(int argc, char* argv[]) {
     auto endTime = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime);
 
-    std::uintmax_t compressedSize = std::filesystem::file_size(outputFile);
+    // Get compressed file size
+    std::ifstream compFile(outputFile);
+    compFile.seekg(0, std::ios::end);
+    std::uintmax_t compressedSize = compFile.tellg();
+    compFile.close();
 
     double compressionRatio = (1.0 - static_cast<double>(compressedSize) / static_cast<double>(originalSize)) * 100.0;
 

@@ -1,12 +1,11 @@
 #include <iostream>
+#include <fstream>
 #include <queue>
 #include <memory>
 #include <unordered_map>
 #include <string>
-#include <fstream>
 #include <chrono>
 
-// HuffmanNode class
 class HuffmanNode {
 public:
     char character;
@@ -14,15 +13,10 @@ public:
     std::shared_ptr<HuffmanNode> left;
     std::shared_ptr<HuffmanNode> right;
 
-    // Constructor
     HuffmanNode(char ch = '\0', int freq = 0)
         : character(ch), frequency(freq), left(nullptr), right(nullptr) {}
-
-    // Destructor
-    ~HuffmanNode() = default;
 };
 
-// Custom comparator struct for min-heap
 struct CompareNode {
     bool operator()(const std::shared_ptr<HuffmanNode>& a, 
                     const std::shared_ptr<HuffmanNode>& b) const {
@@ -30,7 +24,6 @@ struct CompareNode {
     }
 };
 
-// BitReader class for handling bit-level file reading
 class BitReader {
 private:
     std::ifstream inFile;
@@ -39,24 +32,15 @@ private:
     bool eof;
 
 public:
-    // Constructor
     BitReader() : buffer(0), bitCount(0), eof(false) {}
 
-    // Open a file for reading
     void open(const std::string& filename) {
         inFile.open(filename, std::ios::binary);
-        if (!inFile.is_open()) {
-            std::cerr << "Error: Could not open file " << filename << " for reading.\n";
-        }
         bitCount = 8;
     }
 
-    // Read a single bit from the file
     int readBit() {
-        if (!inFile.is_open()) {
-            std::cerr << "Error: File is not open. Call open() first.\n";
-            return -1;
-        }
+        if (!inFile.is_open()) return -1;
 
         if (bitCount == 8) {
             char ch;
@@ -74,25 +58,21 @@ public:
         return bit;
     }
 
-    // Check if end of file reached
     bool isEof() const {
         return eof;
     }
 
-    // Close the file
     void close() {
         if (inFile.is_open()) {
             inFile.close();
         }
     }
 
-    // Check if file is open
     bool isOpen() const {
         return inFile.is_open();
     }
 };
 
-// HuffmanTree class
 class HuffmanTree {
 private:
     std::shared_ptr<HuffmanNode> root;
@@ -101,10 +81,7 @@ public:
     HuffmanTree() : root(nullptr) {}
 
     void buildTree(const std::unordered_map<char, int>& freqMap) {
-        if (freqMap.empty()) {
-            std::cout << "Error: Frequency map is empty!\n";
-            return;
-        }
+        if (freqMap.empty()) return;
 
         std::priority_queue<std::shared_ptr<HuffmanNode>, 
                            std::vector<std::shared_ptr<HuffmanNode>>, 
@@ -115,10 +92,8 @@ public:
         }
 
         while (pq.size() > 1) {
-            auto left = pq.top();
-            pq.pop();
-            auto right = pq.top();
-            pq.pop();
+            auto left = pq.top(); pq.pop();
+            auto right = pq.top(); pq.pop();
 
             int combinedFreq = left->frequency + right->frequency;
             auto parent = std::make_shared<HuffmanNode>('\0', combinedFreq);
@@ -136,7 +111,6 @@ public:
     }
 };
 
-// FileDecompressor class
 class FileDecompressor {
 private:
     std::unordered_map<char, int> frequencyMap;
@@ -146,7 +120,7 @@ public:
     bool readHeader(const std::string& compressedFile) {
         std::ifstream inFile(compressedFile, std::ios::binary);
         if (!inFile.is_open()) {
-            std::cerr << "Error: Could not open compressed file " << compressedFile << "\n";
+            std::cerr << "Error: Could not open compressed file." << std::endl;
             return false;
         }
 
@@ -154,21 +128,17 @@ public:
 
         unsigned char numChars;
         if (!inFile.get(reinterpret_cast<char&>(numChars))) {
-            std::cerr << "Error: Could not read header.\n";
+            std::cerr << "Error: Could not read header." << std::endl;
             inFile.close();
             return false;
         }
-
-        std::cout << "\nReading Header:\n";
-        std::cout << "Number of unique characters: " << static_cast<int>(numChars) << "\n";
-        std::cout << "================================================\n";
 
         for (int i = 0; i < numChars; ++i) {
             char ch;
             unsigned char byte1, byte2, byte3, byte4;
 
             if (!inFile.get(ch)) {
-                std::cerr << "Error: Could not read character from header.\n";
+                std::cerr << "Error: Could not read character from header." << std::endl;
                 inFile.close();
                 return false;
             }
@@ -177,7 +147,7 @@ public:
                 !inFile.get(reinterpret_cast<char&>(byte2)) ||
                 !inFile.get(reinterpret_cast<char&>(byte3)) ||
                 !inFile.get(reinterpret_cast<char&>(byte4))) {
-                std::cerr << "Error: Could not read frequency from header.\n";
+                std::cerr << "Error: Could not read frequency from header." << std::endl;
                 inFile.close();
                 return false;
             }
@@ -188,35 +158,26 @@ public:
                       static_cast<int>(byte4);
 
             frequencyMap[ch] = freq;
-            std::cout << "Character '" << ch << "' (ASCII " << static_cast<int>(static_cast<unsigned char>(ch)) 
-                      << ") -> Frequency: " << freq << "\n";
         }
 
-        std::cout << "================================================\n";
         inFile.close();
         return true;
     }
 
     void decompress(const std::string& compressedFile, const std::string& outputFile) {
-        std::cout << "\n\nStarting Decompression Process...\n";
-        std::cout << "================================================\n";
+        std::cout << "Decompressing " << compressedFile << "..." << std::endl;
 
-        std::cout << "\nStep 1: Reading File Header\n";
         if (!readHeader(compressedFile)) {
-            std::cerr << "Error: Failed to read header.\n";
+            std::cerr << "Error: Failed to read header." << std::endl;
             return;
         }
 
-        std::cout << "\nStep 2: Building Huffman Tree\n";
         tree.buildTree(frequencyMap);
-        std::cout << "Huffman Tree reconstructed successfully.\n";
 
-        std::cout << "\nStep 3: Reading Encoded Data and Decompressing\n";
-        
         // Calculate header size
-        int headerSize = 1;  // numChars byte
+        int headerSize = 1;
         for (int i = 0; i < static_cast<int>(frequencyMap.size()); ++i) {
-            headerSize += 5;  // char + 4 bytes for frequency
+            headerSize += 5;
         }
 
         // Open file and skip header
@@ -226,7 +187,7 @@ public:
         // Open output file
         std::ofstream outFile(outputFile, std::ios::binary);
         if (!outFile.is_open()) {
-            std::cerr << "Error: Could not open output file " << outputFile << "\n";
+            std::cerr << "Error: Could not open output file." << std::endl;
             skipFile.close();
             return;
         }
@@ -267,25 +228,13 @@ public:
         bitReader.close();
         skipFile.close();
 
-        std::cout << "Total characters written: " << totalCharsWritten << "\n";
-        std::cout << "================================================\n";
-        std::cout << "Decompression complete! Output file: " << outputFile << "\n";
+        std::cout << "Decompression complete!" << std::endl;
     }
 };
 
-// Main CLI function for decompression
 int main(int argc, char* argv[]) {
-    std::cout << "\n╔════════════════════════════════════════════════╗\n";
-    std::cout << "║    Huffman File Decompressor - CLI Tool         ║\n";
-    std::cout << "║         Version 1.0 (Decompression)             ║\n";
-    std::cout << "╚════════════════════════════════════════════════╝\n\n";
-
     if (argc < 3) {
-        std::cerr << "Error: Insufficient arguments.\n\n";
-        std::cout << "Usage: decompress.exe <compressed_file> <output_file>\n\n";
-        std::cout << "Example:\n";
-        std::cout << "  decompress.exe myfile.huff myfile.txt\n\n";
-        std::cout << "This will decompress 'myfile.huff' into 'myfile.txt'\n";
+        std::cout << "Usage: decompress.exe <compressed_file> <output_file>" << std::endl;
         return 1;
     }
 
@@ -294,43 +243,15 @@ int main(int argc, char* argv[]) {
 
     std::ifstream checkFile(compressedFile);
     if (!checkFile.is_open()) {
-        std::cerr << "Error: Compressed file '" << compressedFile << "' not found.\n";
+        std::cerr << "Error: Compressed file not found." << std::endl;
         return 1;
     }
-    
-    // Get compressed file size
-    checkFile.seekg(0, std::ios::end);
-    std::uintmax_t compressedSize = checkFile.tellg();
     checkFile.close();
-
-    std::cout << "Compressed file: " << compressedFile << "\n";
-    std::cout << "Output file: " << outputFile << "\n";
-    std::cout << "Compressed file size: " << compressedSize << " bytes\n\n";
-
-    auto startTime = std::chrono::high_resolution_clock::now();
 
     FileDecompressor decompressor;
     decompressor.decompress(compressedFile, outputFile);
 
-    auto endTime = std::chrono::high_resolution_clock::now();
-    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime);
-
-    // Get decompressed file size
-    std::ifstream decompFile(outputFile);
-    decompFile.seekg(0, std::ios::end);
-    std::uintmax_t decompressedSize = decompFile.tellg();
-    decompFile.close();
-
-    std::cout << "\n╔════════════════════════════════════════════════╗\n";
-    std::cout << "║           DECOMPRESSION STATISTICS              ║\n";
-    std::cout << "╚════════════════════════════════════════════════╝\n\n";
-
-    std::cout << "Compressed size:   " << compressedSize << " bytes\n";
-    std::cout << "Decompressed size: " << decompressedSize << " bytes\n";
-    std::cout << "Execution time:    " << duration.count() << " ms\n\n";
-
-    std::cout << "✓ Decompression completed successfully!\n";
-    std::cout << "✓ Decompressed file saved to: " << outputFile << "\n\n";
+    std::cout << "File saved to: " << outputFile << std::endl;
 
     return 0;
 }

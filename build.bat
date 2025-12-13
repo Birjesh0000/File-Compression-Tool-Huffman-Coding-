@@ -1,45 +1,31 @@
 @echo off
-REM Huffman Compressor/Decompressor Build Script
-REM This script attempts to compile the project with available compilers
+REM Add MSYS2 to PATH and compile
 
 echo.
-echo Huffman File Compressor/Decompressor - Build Script
-echo ====================================================
+echo Huffman File Compressor/Decompressor - Build Script (MSYS2)
+echo =========================================================
 echo.
 
-REM Try to find and use available C++ compiler
-where /q clang++
-if %errorlevel% equ 0 (
-    echo Found clang++. Compiling...
-    clang++ -std=c++17 -o compress.exe compress.cpp
-    clang++ -std=c++17 -o decompress.exe decompress.cpp
-    goto :success
+REM Add MSYS2 UCRT64 to PATH temporarily
+set PATH=C:\msys64\ucrt64\bin;%PATH%
+
+echo Compiling compress.cpp...
+g++ -std=c++17 -o compress.exe compress.cpp
+if %errorlevel% neq 0 (
+    echo Error compiling compress.cpp
+    exit /b 1
 )
 
-where /q g++
-if %errorlevel% equ 0 (
-    echo Found g++. Compiling...
-    g++ -std=c++17 -o compress.exe compress.cpp
-    g++ -std=c++17 -o decompress.exe decompress.cpp
-    goto :success
+echo Compiling decompress.cpp...
+g++ -std=c++17 -o decompress.exe decompress.cpp
+if %errorlevel% neq 0 (
+    echo Error compiling decompress.cpp
+    exit /b 1
 )
 
-where /q cl
-if %errorlevel% equ 0 (
-    echo Found MSVC cl.exe. Compiling...
-    cl /std:latest /EHsc compress.cpp /Fe:compress.exe
-    cl /std:latest /EHsc decompress.cpp /Fe:decompress.exe
-    goto :success
-)
-
-echo Error: No C++ compiler found!
-echo Please install one of: MSVC, GCC, or Clang
-exit /b 1
-
-:success
 echo.
-echo Build completed!
-echo Executables: compress.exe, decompress.exe
+echo ✓ Build completed successfully!
+echo ✓ Executables created: compress.exe, decompress.exe
 echo.
 echo Usage:
 echo   compress.exe input_file output.huff
