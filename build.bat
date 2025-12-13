@@ -9,17 +9,17 @@ echo.
 REM Add MSYS2 UCRT64 to PATH temporarily
 set PATH=C:\msys64\ucrt64\bin;%PATH%
 
-echo Compiling compress.cpp...
-g++ -std=c++17 -o compress.exe compress.cpp
+echo Compiling compress_simple.cpp...
+g++ -std=c++17 -static-libgcc -static-libstdc++ -o compress.exe compress_simple.cpp
 if %errorlevel% neq 0 (
-    echo Error compiling compress.cpp
+    echo Error compiling compress_simple.cpp
     exit /b 1
 )
 
-echo Compiling decompress.cpp...
-g++ -std=c++17 -o decompress.exe decompress.cpp
+echo Compiling decompress_simple.cpp...
+g++ -std=c++17 -static-libgcc -static-libstdc++ -o decompress.exe decompress_simple.cpp
 if %errorlevel% neq 0 (
-    echo Error compiling decompress.cpp
+    echo Error compiling decompress_simple.cpp
     exit /b 1
 )
 
