@@ -28,8 +28,8 @@ Huffman/
 │   └── decompress.exe         # Decompression utility
 │
 ├── 📁 SOURCE CODE
-│   ├── compress_fixed.cpp     # Compression implementation
-│   └── decompress_fixed.cpp   # Decompression implementation
+│   ├── compress.cpp           # Compression implementation
+│   └── decompress.cpp         # Decompression implementation
 │
 ├── 📁 BUILD SCRIPTS
 │   ├── build.bat              # Windows automated build
@@ -97,8 +97,8 @@ build.bat
 **Manual Compilation (Windows with MSYS2):**
 ```cmd
 set PATH=C:\msys64\ucrt64\bin;%PATH%
-g++ -std=c++17 -static-libgcc -static-libstdc++ -o compress.exe compress_fixed.cpp
-g++ -std=c++17 -static-libgcc -static-libstdc++ -o decompress.exe decompress_fixed.cpp
+g++ -std=c++17 -static-libgcc -static-libstdc++ -o compress.exe compress.cpp
+g++ -std=c++17 -static-libgcc -static-libstdc++ -o decompress.exe decompress.cpp
 ```
 
 **Linux/macOS:**
