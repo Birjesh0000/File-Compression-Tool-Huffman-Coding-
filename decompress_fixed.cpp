@@ -73,10 +73,12 @@ void decompress(const std::string& inFile, const std::string& outFile) {
         buffer = (unsigned char)ch;
         for (int i = 0; i < 8 && charsWritten < totalChars; i++) {
             int bit = (buffer >> (7 - i)) & 1;
-            if (bit == 0 && node->left) node = node->left;
-            else if (bit == 1 && node->right) node = node->right;
+            if (bit == 0) 
+                node = node->left;
+            else 
+                node = node->right;
             
-            if (node->ch != 0) {
+            if (node && node->ch != 0) {
                 out.put(node->ch);
                 charsWritten++;
                 node = root;
