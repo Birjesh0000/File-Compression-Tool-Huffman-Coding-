@@ -63,9 +63,11 @@ void compress(const std::string& inFile, const std::string& outFile) {
     }
     char ch;
     int totalChars = 0;
+    std::string fileContent;
     while (in.get(ch)) {
         freq[ch]++;
         totalChars++;
+        fileContent += ch;
     }
     in.close();
 
@@ -91,21 +93,18 @@ void compress(const std::string& inFile, const std::string& outFile) {
     std::unordered_map<char, std::string> codes;
     generateCodes(root, "", codes);
 
-    // Write header
+    // Write to output file (header + encoded data)
     std::ofstream out(outFile, std::ios::binary);
     if (!out) {
         std::cerr << "Error: Cannot open output file." << std::endl;
         return;
     }
     writeHeader(out, freq, totalChars);
-    out.close();
 
     // Write encoded data
-    out.open(outFile, std::ios::binary | std::ios::app);
     unsigned char buffer = 0, bitCount = 0;
-    in.open(inFile, std::ios::binary);
-    while (in.get(ch)) {
-        for (char bit : codes[ch]) {
+    for (char c : fileContent) {
+        for (char bit : codes[c]) {
             buffer = (buffer << 1) | (bit - '0');
             bitCount++;
             if (bitCount == 8) {
@@ -116,7 +115,6 @@ void compress(const std::string& inFile, const std::string& outFile) {
         }
     }
     if (bitCount > 0) out.put(buffer << (8 - bitCount));
-    in.close();
     out.close();
 
     std::cout << "Compression complete!" << std::endl;
@@ -127,13 +125,6 @@ int main(int argc, char* argv[]) {
         std::cout << "Usage: compress.exe <input_file> <output_file>" << std::endl;
         return 1;
     }
-    std::ifstream test(argv[1]);
-    if (!test) {
-        std::cerr << "Error: Input file not found." << std::endl;
-        return 1;
-    }
-    test.close();
     compress(argv[1], argv[2]);
-    std::cout << "File saved to: " << argv[2] << std::endl;
     return 0;
 }

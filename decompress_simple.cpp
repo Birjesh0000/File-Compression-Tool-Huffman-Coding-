@@ -93,13 +93,6 @@ int main(int argc, char* argv[]) {
         std::cout << "Usage: decompress.exe <compressed_file> <output_file>" << std::endl;
         return 1;
     }
-    std::ifstream test(argv[1]);
-    if (!test) {
-        std::cerr << "Error: Compressed file not found." << std::endl;
-        return 1;
-    }
-    test.close();
     decompress(argv[1], argv[2]);
-    std::cout << "File saved to: " << argv[2] << std::endl;
     return 0;
 }

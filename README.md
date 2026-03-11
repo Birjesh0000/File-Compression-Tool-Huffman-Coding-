@@ -24,24 +24,27 @@ This project implements the complete Huffman coding algorithm with separate comp
 ```
 Huffman/
 ├── 📁 EXECUTABLE FILES (Ready to use)
-│   ├── compress.exe           # Compression utility (3.2 MB)
-│   └── decompress.exe         # Decompression utility (3.1 MB)
+│   ├── compress.exe           # Compression utility
+│   └── decompress.exe         # Decompression utility
 │
-├── 📁 SOURCE CODE (5 versions)
-│   ├── compress_simple.cpp      # Current working implementation
-│   ├── decompress_simple.cpp    # Current working implementation
-│   ├── compress.cpp             # Full-featured version (with metrics)
-│   ├── decompress.cpp           # Full-featured version (with metrics)
-│   └── huffman_node.cpp         # All-in-one monolithic implementation
+├── 📁 SOURCE CODE
+│   ├── compress_fixed.cpp     # Compression implementation
+│   └── decompress_fixed.cpp   # Decompression implementation
 │
 ├── 📁 BUILD SCRIPTS
 │   ├── build.bat              # Windows automated build
 │   └── build.sh               # Linux/macOS automated build
 │
+├── 📁 TEST & SAMPLE FILES
+│   ├── test_input.txt         # Sample input file
+│   ├── sample.huff            # Sample compressed output
+│   └── recovered.txt          # Test decompressed output
+│
 └── 📁 DOCUMENTATION
     ├── README.md              # This file
     ├── QUICK_START.txt        # Quick usage guide
-    └── COMPLETION_REPORT.txt  # Technical specifications
+    ├── COMPLETION_REPORT.txt  # Technical specifications
+    └── TEST_REPORT.txt        # Test results
 ```
 
 ---
@@ -94,8 +97,8 @@ build.bat
 **Manual Compilation (Windows with MSYS2):**
 ```cmd
 set PATH=C:\msys64\ucrt64\bin;%PATH%
-g++ -std=c++17 -static-libgcc -static-libstdc++ -o compress.exe compress_simple.cpp
-g++ -std=c++17 -static-libgcc -static-libstdc++ -o decompress.exe decompress_simple.cpp
+g++ -std=c++17 -static-libgcc -static-libstdc++ -o compress.exe compress_fixed.cpp
+g++ -std=c++17 -static-libgcc -static-libstdc++ -o decompress.exe decompress_fixed.cpp
 ```
 
 **Linux/macOS:**

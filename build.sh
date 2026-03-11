@@ -10,12 +10,12 @@ echo ""
 # Try to find and use available C++ compiler
 if command -v clang++ &> /dev/null; then
     echo "Found clang++. Compiling..."
-    clang++ -std=c++17 -o compress compress.cpp
-    clang++ -std=c++17 -o decompress decompress.cpp
+    clang++ -std=c++17 -o compress compress_fixed.cpp
+    clang++ -std=c++17 -o decompress decompress_fixed.cpp
 elif command -v g++ &> /dev/null; then
     echo "Found g++. Compiling..."
-    g++ -std=c++17 -o compress compress.cpp
-    g++ -std=c++17 -o decompress decompress.cpp
+    g++ -std=c++17 -o compress compress_fixed.cpp
+    g++ -std=c++17 -o decompress decompress_fixed.cpp
 else
     echo "Error: No C++ compiler found!"
     echo "Please install one of: GCC or Clang"
